@@ -1,5 +1,6 @@
 import React,{useState} from 'react'
 import { Link } from 'react-router-dom';
+import { BASE_URL } from '../config/config';
 
 const TimeTable = () => {
     const [unitTitle, setUnitTitle] = useState("");
@@ -8,9 +9,20 @@ const TimeTable = () => {
     const [time, setTime] = useState("");
   
     const handleSubmit = (e) => {
-      e.preventDefault();
-      console.log({ unitTitle, code, lecturer, time });
-    };
+        e.preventDefault();
+        fetch(`${BASE_URL}/class'`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ title:unitTitle, code, lecturer, time })
+        })
+          .then(res => res.json())
+          .then(data => console.log(data))
+          .catch(err => console.log(err));
+        window.alert("timetable successfully created");
+        console.log({ unitTitle, code, lecturer, time });
+      };
 
 
   return (
