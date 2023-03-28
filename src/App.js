@@ -7,8 +7,15 @@ import ProtectedRoute from './Utils/ProtectedRoute';
 import TimeTable from './pages/TimeTable';
 import UploadForm from './pages/UploadForm';
 import ImageUploadForm from './pages/ImageUploadForm';
+import SetUp from "./pages/SetUp";
+import Assignment from './pages/Assignment';
+import UpComing from './pages/UpComing';
+import Performance from './pages/Performance';
+import { useSelector } from 'react-redux';
 
 const App = () => {
+  const user = useSelector((state) => state?.user.user);
+
   return (
     <>
   
@@ -16,14 +23,18 @@ const App = () => {
       <Routes>
         <Route path="/" element={
           <ProtectedRoute>
-             <Home/>
+             <SetUp/>
           </ProtectedRoute>
         }/>
+        <Route path="/home" element={user ?  <Home/>: <SetUp/>} />
         <Route path="/login" element={<Login/>} />
         <Route path="/register" element={<Register/>}/>
-        <Route path='/timetable' element={<TimeTable/>}/>
-        <Route path='/uploadform' element={<UploadForm/>}/>
-        <Route path='/notes' element={<ImageUploadForm/>}/>
+        <Route path='/timetable' element={user ? <TimeTable/>: <SetUp/>}/>
+        <Route path='/assignment' element={user ? <Assignment/>: <SetUp/>}/>
+        <Route path='/classes' element={user ? <UpComing/>: <SetUp/>}/>
+        <Route path='/uploadform' element={user ? <UploadForm/>: <SetUp/>}/>
+        <Route path='/notes' element={user ? <ImageUploadForm/> : <SetUp/>}/>
+        <Route path='/performance' element={user ? <Performance/>: <SetUp/>}/>
       </Routes>
     </Router> 
     </>
