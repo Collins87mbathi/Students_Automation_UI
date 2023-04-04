@@ -23,7 +23,7 @@ const Navbar = () => {
   return (
     <div className="mx-auto flex justify-between items-center max-w-4xl xl:max-w-6xl">
       <Link to="/">
-        <h4 className="p-4 text-lg font-semibold hover:text-[#40AA54] text-[#16162E] active:text-[#40AA54] transition duration-500 focus:text-[#40AA54]">Student Automation</h4>
+        <h4 className="p-4 text-lg font-semibold hover:text-[#40AA54] text-[#16162E] active:text-[#40AA54] transition duration-500 focus:text-[#40AA54]">Smart Learning Assistant</h4>
       </Link>
       <div className="flex flex-row items-center space-x-16">
         <ul className="hidden items-center flex-row md:flex">

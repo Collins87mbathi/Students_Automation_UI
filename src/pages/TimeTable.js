@@ -13,6 +13,7 @@ const TimeTable = () => {
   const [day, setDay] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [data, setData] = useState([]);
+  const [editItem, setEditItem] = useState(null);
   const user = useSelector((state) => state?.user.user);
 
   useEffect(() => {
@@ -29,41 +30,72 @@ const TimeTable = () => {
     };
   }, []);
 
+  const handleEdit = (item) => {
+    setUnitTitle(item.title);
+    setCode(item.code);
+    setLecturer(item.lecturer);
+    setTime(item.time);
+    setDay(item.day);
+    setEditItem(item);
+    setShowModal(true);
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      await axios.delete(`${BASE_URL}/class/${id}`, {
+        headers: { authorization: `Bearer ${user.token}` },
+      });
+      setData(data.filter((item) => item.id !== id));
+      window.alert("timetable successfully deleted");
+      window.location.reload();
+    } catch (error) {
+      window.alert("an error occurred while deleting the timetable");
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(`${BASE_URL}/class`,{ title: unitTitle, code, lecturer, time, day },
-    {
-    headers: {
-      "authorization":`Bearer ${user.token}`
-    }
-   }
-    )
-     window.alert("timetable successfully created");
-    response && window.location.reload();
-    setShowModal(false);
+      if (editItem) {
+       const response = await axios.put(
+          `${BASE_URL}/class/${editItem._id}`,
+          { title: unitTitle, code, lecturer, time, day },
+          { headers: { authorization: `Bearer ${user.token}` } }
+        );
+        window.alert("timetable successfully updated");
+        response && window.location.reload();
+        setShowModal(false);
+      } else {
+        const response = await axios.post(
+          `${BASE_URL}/class`,
+          { title: unitTitle, code, lecturer, time, day },
+          {
+            headers: {
+              authorization: `Bearer ${user.token}`,
+            },
+          }
+        );
+        window.alert("timetable successfully created");
+        response && window.location.reload();
+        setShowModal(false);
+      }
     } catch (error) {
-      console.log(error);
+      window.alert("please input unique values");
     }
-    
-  }
-  useEffect(()=>{
+  };
+  useEffect(() => {
     const handleFetch = async () => {
       try {
-        const response = await axios.get(`${BASE_URL}/class`,
-      {
-        headers: { authorization: `Bearer ${user.token}`},
-      }
-      )
-      setData(response.data);
+        const response = await axios.get(`${BASE_URL}/class`, {
+          headers: { authorization: `Bearer ${user.token}` },
+        });
+        setData(response.data);
       } catch (error) {
-        console.log(error);
+        window.alert(error.response.data);
       }
-
     };
     handleFetch();
-
-  },[user.token]);
+  }, [user.token]);
 
   return (
     <div>
@@ -220,37 +252,48 @@ const TimeTable = () => {
             <th className="border border-blue-500 px-4 py-2">Time</th>
             <th className="border border-blue-500 px-4 py-2">Day</th>
             <th className="border border-blue-500 px-4 py-2">Lecturer</th>
+            <th className="w-1/12 border border-blue-500 px-4 py-2">Edit</th>
+            <th className="w-1/12 border border-blue-500 px-4 py-2">Delete</th>
           </tr>
         </thead>
         <tbody>
           {data.map((item) => (
             <tr key={item._id}>
-              <td className="border border-blue-500 px-4 py-2">
-                {item.title}
-              </td>
-              <td className="border border-blue-500 px-4 py-2">
-                {item.code}
-              </td>
+              <td className="border border-blue-500 px-4 py-2">{item.title}</td>
+              <td className="border border-blue-500 px-4 py-2">{item.code}</td>
               <td className="border border-blue-500 px-4 py-2">{item.time}</td>
               <td className="border border-blue-500 px-4 py-2">{item.day}</td>
               <td className="border border-blue-500 px-4 py-2">
                 {item.lecturer}
               </td>
+              <td className="border border-blue-500 px-4 py-2">
+                <button
+                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                  onClick={() => handleEdit(item)}
+                >
+                  Edit
+                </button>
+              </td>
+              <td className="border border-blue-500 px-4 py-2">
+                <button
+                  className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                  onClick={() => handleDelete(item._id)}
+                >
+                  Delete
+                </button>
+              </td>
             </tr>
           ))}
         </tbody>
         <div className="pt-8">
-        <button
-    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2  px-4 rounded focus:outline-none focus:shadow-outline flex justify-center"
-    type="submit"
-  >
-      <Link to='/home'>
-      Go Back Home
-      </Link>
-  </button>
-  </div>
+          <button
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2  px-4 rounded focus:outline-none focus:shadow-outline flex justify-center"
+            type="submit"
+          >
+            <Link to="/home">Go Back Home</Link>
+          </button>
+        </div>
       </table>
-     
     </div>
   );
 };

@@ -36,6 +36,7 @@ const fetchData = async (e) => {
     setLoading(false);
     setLoginFailure();
     setError(error.response.data);
+    console.log(error.response);
   }
 }
   return (

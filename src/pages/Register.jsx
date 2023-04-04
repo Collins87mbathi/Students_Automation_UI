@@ -32,6 +32,7 @@ try {
   response && window.location.replace('/login');
 } catch (error) {
  setLoading(false);
+ console.log(error.response);
  setError(error.response.data); 
 }
 };
