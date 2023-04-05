@@ -91,7 +91,7 @@ const Hero = () => {
     </div>
     
     <div className="border shadow-lg rounded-lg hover:scale-105 duration-300">
-      <Link to='https://portal.mut.ac.ke/'>
+      <Link to='https://masomo.mut.ac.ke/'>
       <div className="h-25 m-4">
         <img
           src={img1}

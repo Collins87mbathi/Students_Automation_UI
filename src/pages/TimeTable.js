@@ -52,12 +52,11 @@ const TimeTable = () => {
       window.alert("an error occurred while deleting the timetable");
     }
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       if (editItem) {
-       const response = await axios.put(
+        const response = await axios.put(
           `${BASE_URL}/class/${editItem._id}`,
           { title: unitTitle, code, lecturer, time, day },
           { headers: { authorization: `Bearer ${user.token}` } }
@@ -97,6 +96,61 @@ const TimeTable = () => {
     handleFetch();
   }, [user.token]);
 
+  const importFromPortal = async () => {
+    try {
+      const sampleJson = [
+        {
+          title: "Introduction to Computer Science",
+          code: "CS101",
+          lecturer: "Dr. Susan",
+          time: "10:00 AM",
+          day: "Monday",
+        },
+        {
+          title: "Calculus I",
+          code: "MATH101",
+          lecturer: "Prof. Kasunguwa",
+          time: "11:00 AM",
+          day: "Tuesday",
+        },
+        {
+          title: "Operating System",
+          code: "OPS201",
+          lecturer: "Dr. Kinuthia",
+          time: "2:00 PM",
+          day: "Thursday",
+        },
+        {
+          title: "Organic Chemistry",
+          code: "CHEM301",
+          lecturer: "Prof. Top G",
+          time: "9:00 AM",
+          day: "Wednesday",
+        },
+        {
+          title: "Microeconomics",
+          code: "ECO201",
+          lecturer: "Dr. Kimanzi",
+          time: "3:00 PM",
+          day: "Friday",
+        },
+      ];
+      const response = await fetch(`${BASE_URL}/class/all`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+         authorization: `Bearer ${user.token}` 
+        },
+        body: JSON.stringify(sampleJson),
+      });
+      const data = await response.json();
+      window.alert("timetable successfully imported");
+        data && window.location.reload();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   return (
     <div>
       <nav className="flex items-center justify-between flex-wrap p-6 max-w-4xl xl:max-w-6xl mx-auto">
@@ -107,7 +161,14 @@ const TimeTable = () => {
         </div>
         <div className="w-full block flex-grow lg:flex lg:items-center lg:w-auto">
           <div className="text-sm lg:flex-grow"></div>
-          <div>
+          <div className="flex items-center gap-2">
+            <button
+              className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
+              onClick={importFromPortal}
+            >
+              Import from Portal
+            </button>
+
             <button
               className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
               onClick={() => setShowModal(true)}

@@ -1,93 +1,126 @@
-import React, { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import axios from 'axios';
-import { BASE_URL } from '../config/config';
-import Dropzone from 'react-dropzone';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import axios from "axios";
+import { BASE_URL } from "../config/config";
+import { Link } from "react-router-dom";
+
 
 const Performance = () => {
-  const [previousPerformance, setPreviousPerformance] = useState([]);
-  const [latestPerformance, setLatestPerformance] = useState(null);
+  const [performance, setPerformance] = useState([]);
   const user = useSelector((state) => state?.user.user);
 
-  // Fetch previous performance on component mount
   useEffect(() => {
-    const fetchPreviousPerformance = async () => {
+    const handleFetch = async () => {
       try {
         const response = await axios.get(`${BASE_URL}/performance`, {
           headers: { authorization: `Bearer ${user.token}` },
         });
-        setPreviousPerformance(response.data);
+        setPerformance(response.data);
       } catch (error) {
         console.log(error);
       }
     };
-    fetchPreviousPerformance();
+    handleFetch();
   }, [user.token]);
 
-  // Handle file upload
-  const handleFileUpload = async (acceptedFiles) => {
-    const formData = new FormData();
-    formData.append('performance', acceptedFiles[0]);
+  const importFromPortal = async () => {
     try {
-      const response = await axios.post(`${BASE_URL}/performance`, formData, {
-        headers: {
-          authorization: `Bearer ${user.token}`,
-          'Content-Type': 'multipart/form-data',
+      const sampleJson = [
+        {
+          unitCode: "CS101",
+          unitTitle: "Introduction to Computer Science",
+          grade: "A",
+          year: 2,
+          semester: 1,
         },
+        {
+          unitCode: "MATH101",
+          unitTitle: "Calculus I",
+          grade: "B",
+          year: 2,
+          semester: 1,
+        },
+        {
+          unitCode: "OPS201",
+          unitTitle: "Operating System",
+          grade: "B",
+          year: 2,
+          semester: 1,
+        },
+        {
+          unitCode: "CHEM301",
+          unitTitle: "Organic Chemistry",
+          grade: "A",
+          year: 2,
+          semester: 2,
+        },
+        {
+          unitCode: "ECO201",
+          unitTitle: "Microeconomics",
+          grade: "C",
+          year: 1,
+          semester: 1,
+        },
+      ];
+      
+      const response = await fetch(`${BASE_URL}/performance`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+         authorization: `Bearer ${user.token}` 
+        },
+        body: JSON.stringify(sampleJson),
       });
-      setLatestPerformance(response.data);
-    } catch (error) {
-      console.log(error);
+      const data = await response.json();
+      window.alert("performance successfully imported");
+        data && window.location.reload();
+    } catch (err) {
+      console.error(err);
     }
   };
 
   return (
-    <div className='max-w-4xl xl:max-w-6xl mx-auto px-4 mt-8'>
-      {latestPerformance && (
-        <div>
-          <h2>Latest Performance:</h2>
-          <p>Date: {latestPerformance.date}</p>
-          <p>Score: {latestPerformance.score}</p>
-          <p>
-            File:{' '}
-            <a href={`${BASE_URL}/${latestPerformance.filePath}`}>
-              {latestPerformance.fileName}
-            </a>
-          </p>
+    <div>
+      <nav className="flex items-center justify-between flex-wrap p-6 max-w-4xl xl:max-w-6xl mx-auto">
+        <div className="flex items-center flex-shrink-0 text-white mr-6">
+          <span className="font-semibold text-xl tracking-tight text-black">
+            Performance
+          </span>
         </div>
-      )}
-      <h2>Upload Performance:</h2>
-      <Dropzone onDrop={handleFileUpload}>
-        {({ getRootProps, getInputProps }) => (
-          <div {...getRootProps()} className="border-dashed border-2 p-10">
-            <input {...getInputProps()} />
-            <p>Drag and drop your performance PDF file here, or click to select a file</p>
+        <div className="w-full block flex-grow lg:flex lg:items-center lg:w-auto">
+          <div className="text-sm lg:flex-grow"></div>
+          <div className="flex items-center gap-2">
+            <button className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
+            onClick={importFromPortal}
+            >
+              Import from Portal
+            </button>
           </div>
-        )}
-      </Dropzone>
-      <h2>Previous Performances:</h2>
-      <table className="table-auto">
+        </div>
+      </nav>
+      <table className="table-auto w-full mt-5 max-w-4xl xl:max-w-6xl mx-auto">
         <thead>
           <tr>
-            <th>Date</th>
-            <th>Score</th>
-            <th>File</th>
+            <th className="px-4 py-2">Unit Code</th>
+            <th className="px-4 py-2">Unit Title</th>
+            <th className="px-4 py-2">Grade</th>
+            <th className="px-4 py-2">Year</th>
+            <th className="px-4 py-2">Semester</th>
           </tr>
         </thead>
         <tbody>
-          {previousPerformance.map((performance) => (
-            <tr key={performance._id}>
-              <td>{performance.date}</td>
-              <td>{performance.score}</td>
-              <td>
-                <a href={`${BASE_URL}/${performance.filePath}`}>{performance.fileName}</a>
-              </td>
+          {performance.map((p) => (
+            <tr key={p._id}>
+              <td className="border px-4 py-2">{p.unitCode}</td>
+              <td className="border px-4 py-2">{p.unitTitle}</td>
+              <td className="border px-4 py-2">{p.grade}</td>
+              <td className="border px-4 py-2">{p.year}</td>
+              <td className="border px-4 py-2">{p.semester}</td>
             </tr>
           ))}
         </tbody>
       </table>
-      <div className="pt-10 px-36">
+      <div className="pt-8 max-w-4xl xl:max-w-6xl mx-auto">
           <button
             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2  px-4 rounded focus:outline-none focus:shadow-outline flex justify-center"
             type="submit"
