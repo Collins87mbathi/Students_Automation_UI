@@ -41,6 +41,13 @@ function ImageUploadForm() {
     setPdfFiles(storedPdfFiles);
   }, []);
 
+  const handleDelete = (index) => {
+    const newPdfFiles = [...pdfFiles];
+    newPdfFiles.splice(index, 1);
+    localStorage.setItem("pdfFiles", JSON.stringify(newPdfFiles));
+    setPdfFiles(newPdfFiles);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (file || pdfFiles.length > 0) {
@@ -103,7 +110,8 @@ function ImageUploadForm() {
                 {pdf.name}{" "}
                 <a href={pdf.data} className="text-blue-600" download>
                   Download
-                </a>
+                </a>{" "}
+                <button onClick={() => handleDelete(i) } className="text-red-500">Delete</button>
               </li>
             ))}
           </ul>
