@@ -26,7 +26,7 @@ const App = () => {
              <SetUp/>
           </ProtectedRoute>
         }/>
-        <Route path="/home" element={user ?  <Home/>: <SetUp/>} />
+        <Route path="/home" element={user ?  <Home/>: <Login/>} />
         <Route path="/login" element={<Login/>} />
         <Route path="/register" element={<Register/>}/>
         <Route path='/timetable' element={user ? <TimeTable/>: <SetUp/>}/>

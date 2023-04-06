@@ -14,6 +14,12 @@ const TimeTable = () => {
   const [showModal, setShowModal] = useState(false);
   const [data, setData] = useState([]);
   const [editItem, setEditItem] = useState(null);
+  const [unitTitleError, setUnitTitleError] = useState("");
+const [codeError, setCodeError] = useState("");
+const [lecturerError, setLecturerError] = useState("");
+const [dayError, setDayError] = useState("");
+const [timeError, setTimeError] = useState("");
+
   const user = useSelector((state) => state?.user.user);
 
   useEffect(() => {
@@ -52,35 +58,83 @@ const TimeTable = () => {
       window.alert("an error occurred while deleting the timetable");
     }
   };
+
+  const containsNumber = (string) => {
+    return /\d/.test(string);
+  };
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      if (editItem) {
-        const response = await axios.put(
-          `${BASE_URL}/class/${editItem._id}`,
-          { title: unitTitle, code, lecturer, time, day },
-          { headers: { authorization: `Bearer ${user.token}` } }
-        );
-        window.alert("timetable successfully updated");
-        response && window.location.reload();
-        setShowModal(false);
-      } else {
-        const response = await axios.post(
-          `${BASE_URL}/class`,
-          { title: unitTitle, code, lecturer, time, day },
-          {
-            headers: {
-              authorization: `Bearer ${user.token}`,
-            },
-          }
-        );
-        window.alert("timetable successfully created");
-        response && window.location.reload();
-        setShowModal(false);
-      }
-    } catch (error) {
-      window.alert("please input unique values");
+    let isError = false;
+
+    if (!unitTitle) {
+      setUnitTitleError("Please enter a unit title.");
+      isError = true;
+    } else if (containsNumber(unitTitle)) {
+      setUnitTitleError("Unit title should not contain numbers.");
+      isError = true;
+    } else {
+      setUnitTitleError("");
     }
+  
+    if (!code) {
+      setCodeError("Please enter a code.");
+      isError = true;
+    } else {
+      setCodeError("");
+    }
+  
+    if (!lecturer) {
+      setLecturerError("Please enter a lecturer.");
+      isError = true;
+    } else {
+      setLecturerError("");
+    }
+  
+    if (!day) {
+      setDayError("Please select a day.");
+      isError = true;
+    } else {
+      setDayError("");
+    }
+  
+    if (!time) {
+      setTimeError("Please enter a time.");
+      isError = true;
+    } else {
+      setTimeError("");
+    }
+  
+    if (!isError) {
+      try {
+        if (editItem) {
+          const response = await axios.put(
+            `${BASE_URL}/class/${editItem._id}`,
+            { title: unitTitle, code, lecturer, time, day },
+            { headers: { authorization: `Bearer ${user.token}` } }
+          );
+          window.alert("timetable successfully updated");
+          response && window.location.reload();
+          setShowModal(false);
+        } else {
+          const response = await axios.post(
+            `${BASE_URL}/class`,
+            { title: unitTitle, code, lecturer, time, day },
+            {
+              headers: {
+                authorization: `Bearer ${user.token}`,
+              },
+            }
+          );
+          window.alert("timetable successfully created");
+          response && window.location.reload();
+          setShowModal(false);
+        }
+      } catch (error) {
+        window.alert("please input unique values");
+      }
+    }
+    
   };
   useEffect(() => {
     const handleFetch = async () => {
@@ -207,13 +261,18 @@ const TimeTable = () => {
                       Unit Title
                     </label>
                     <input
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                      className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
+                        unitTitleError && "border-red-500"
+                      }`}
                       id="unitTitle"
                       type="text"
                       placeholder="Enter unit title"
                       value={unitTitle}
                       onChange={(e) => setUnitTitle(e.target.value)}
                     />
+                    {unitTitleError && (
+        <p className="text-red-500 text-xs italic">{unitTitleError}</p>
+      )}
                   </div>
                   <div className="mb-4">
                     <label
@@ -223,13 +282,18 @@ const TimeTable = () => {
                       Code
                     </label>
                     <input
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                       className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
+                        codeError && "border-red-500"
+                      }`}
                       id="code"
                       type="text"
                       placeholder="Enter code"
                       value={code}
                       onChange={(e) => setCode(e.target.value)}
                     />
+                    {codeError && (
+        <p className="text-red-500 text-xs italic">{codeError}</p>
+      )}
                   </div>
                   <div className="mb-4">
                     <label
@@ -239,13 +303,18 @@ const TimeTable = () => {
                       Lecturer
                     </label>
                     <input
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                       className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
+                        lecturerError && "border-red-500"
+                      }`}
                       id="lecturer"
                       type="text"
                       placeholder="Enter lecturer"
                       value={lecturer}
                       onChange={(e) => setLecturer(e.target.value)}
                     />
+                    {lecturerError && (
+        <p className="text-red-500 text-xs italic">{lecturerError}</p>
+      )}
                   </div>
                   <div className="mb-4">
                     <label
@@ -255,7 +324,9 @@ const TimeTable = () => {
                       Day
                     </label>
                     <select
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                      className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
+                        dayError && "border-red-500"
+                      }`}
                       id="day"
                       value={day}
                       onChange={(e) => setDay(e.target.value)}
@@ -267,6 +338,9 @@ const TimeTable = () => {
                       <option value="Thursday">Thursday</option>
                       <option value="Friday">Friday</option>
                     </select>
+                    {dayError && (
+        <p className="text-red-500 text-xs italic">{dayError}</p>
+      )}
                   </div>
                   <div className="mb-6">
                     <label
@@ -276,13 +350,18 @@ const TimeTable = () => {
                       Time
                     </label>
                     <input
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                       className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
+                        timeError && "border-red-500"
+                      }`}
                       id="time"
                       type="text"
                       placeholder="Enter time"
                       value={time}
                       onChange={(e) => setTime(e.target.value)}
                     />
+                    {timeError && (
+        <p className="text-red-500 text-xs italic">{timeError}</p>
+      )}
                   </div>
                   <div className="flex items-center justify-between">
                     <button

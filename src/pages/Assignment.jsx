@@ -14,6 +14,7 @@ const Assignment = () => {
   const [showModal, setShowModal] = useState(false);
   const [data, setData] = useState([]);
   const [editMode, setEditMode] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const user = useSelector((state) => state?.user.user);
 
   useEffect(() => {
@@ -53,6 +54,14 @@ const Assignment = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!title || !datetime || !description) {
+      setErrorMessage("Please fill out all fields");
+      return;
+    }
+    if (/\d/.test(title)) {
+      setErrorMessage("Title should not contain any numbers");
+      return;
+    }
     try {
       const selectedDate = moment(datetime, "YYYY-MM-DDTHH:mm").toDate();
       if (selectedDate < new Date()) {
@@ -85,7 +94,7 @@ const Assignment = () => {
       response && window.location.reload();
       setShowModal(false);
     } catch (error) {
-      window.alert(error.response.data);
+      window.alert("please input values/unqiue values");
     }
   };
 
@@ -139,6 +148,11 @@ const Assignment = () => {
             <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
               <form onSubmit={handleSubmit}>
                 <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                {errorMessage && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+            {errorMessage}
+          </div>
+        )}
                   <div className="mb-4">
                     <label
                       className="block text-gray-700 font-bold mb-2"
