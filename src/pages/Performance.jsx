@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import axios from "axios";
 import { BASE_URL } from "../config/config";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 
 
 const Performance = () => {
@@ -72,8 +73,19 @@ const Performance = () => {
         body: JSON.stringify(sampleJson),
       });
       const data = await response.json();
-      window.alert("performance successfully imported");
+      response && toast.success('Assignment successfully created', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        });
+      setTimeout(() => {
         data && window.location.reload();
+      }, 3000);
     } catch (err) {
       console.error(err);
     }

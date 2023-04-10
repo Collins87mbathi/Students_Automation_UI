@@ -5,6 +5,7 @@ import moment from "moment";
 import { Link } from "react-router-dom";
 
 import { BASE_URL } from "../config/config";
+import { toast } from "react-toastify";
 
 const Assignment = () => {
   const modalRef = useRef(null);
@@ -33,15 +34,30 @@ const Assignment = () => {
 
   const handleDelete = async (id) => {
     try {
+      const confirmed = window.confirm("Are you sure you want to delete this assignment?");
+      if (!confirmed) {
+        return;
+      }
+  
       await axios.delete(`${BASE_URL}/assignment/${id}`, {
         headers: { authorization: `Bearer ${user.token}` },
       });
       setData(data.filter((item) => item._id !== id));
-      window.alert("Assignment deleted successfully");
+      toast.success('Assignment successfully deleted', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
     } catch (error) {
       console.log(error);
     }
   };
+  
 
   const handleEdit = (id) => {
     const item = data.find((item) => item._id === id);
@@ -65,11 +81,24 @@ const Assignment = () => {
     try {
       const selectedDate = moment(datetime, "YYYY-MM-DDTHH:mm").toDate();
       if (selectedDate < new Date()) {
-        window.alert("Please select a future date and time");
+        toast.error('Please select a future date and time', {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+          });
         return;
       }
       let response;
       if (editMode) {
+        const confirmed = window.confirm("Are you sure you want to update this assignment?");
+      if (!confirmed) {
+        return;
+      }
         response = await axios.put(
           `${BASE_URL}/assignment/${editMode}`,
           { title, date: selectedDate, description },
@@ -90,11 +119,22 @@ const Assignment = () => {
           }
         );
       }
-      window.alert("timetable successfully created");
-      response && window.location.reload();
+      response && toast.success('Assignment successfully created', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        });
       setShowModal(false);
+      setTimeout(() => {
+        response && window.location.reload();
+      }, 3000);
     } catch (error) {
-      window.alert("please input values/unqiue values");
+      console.log(error);
     }
   };
 

@@ -3,6 +3,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { BASE_URL } from "../config/config";
+import { toast } from "react-toastify";
 
 const TimeTable = () => {
   const modalRef = useRef(null);
@@ -48,12 +49,24 @@ const [timeError, setTimeError] = useState("");
 
   const handleDelete = async (id) => {
     try {
+      const confirmed = window.confirm("Are you sure you want to delete this class?");
+      if (!confirmed) {
+        return;
+      }
       await axios.delete(`${BASE_URL}/class/${id}`, {
         headers: { authorization: `Bearer ${user.token}` },
       });
       setData(data.filter((item) => item.id !== id));
-      window.alert("timetable successfully deleted");
-      window.location.reload();
+      toast.success('Class successfully deleted', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        });
     } catch (error) {
       window.alert("an error occurred while deleting the timetable");
     }
@@ -108,13 +121,28 @@ const [timeError, setTimeError] = useState("");
     if (!isError) {
       try {
         if (editItem) {
+          const confirmed = window.confirm("Are you sure you want to update this class?");
+      if (!confirmed) {
+        return;
+      }
           const response = await axios.put(
             `${BASE_URL}/class/${editItem._id}`,
             { title: unitTitle, code, lecturer, time, day },
             { headers: { authorization: `Bearer ${user.token}` } }
           );
-          window.alert("timetable successfully updated");
-          response && window.location.reload();
+          toast.success('Class successfully updated', {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+            });
+            setTimeout(() => {
+              response && window.location.reload();
+            }, 3000);
           setShowModal(false);
         } else {
           const response = await axios.post(
@@ -126,12 +154,33 @@ const [timeError, setTimeError] = useState("");
               },
             }
           );
-          window.alert("timetable successfully created");
-          response && window.location.reload();
+          toast.success('Class successfully added', {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+            });
+
+            setTimeout(() => {
+             response && window.location.reload();
+            }, 3000);
           setShowModal(false);
         }
       } catch (error) {
-        window.alert("please input unique values");
+        toast.error('please input unqiue values', {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+          });
       }
     }
     
@@ -198,8 +247,19 @@ const [timeError, setTimeError] = useState("");
         body: JSON.stringify(sampleJson),
       });
       const data = await response.json();
-      window.alert("timetable successfully imported");
-        data && window.location.reload();
+      toast.success('timetable successfully imported', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        });
+        setTimeout(() => {
+         data && window.location.reload();
+        }, 3000);
     } catch (err) {
       console.error(err);
     }
