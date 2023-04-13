@@ -12,6 +12,7 @@ import Assignment from './pages/Assignment';
 import UpComing from './pages/UpComing';
 import Performance from './pages/Performance';
 import { useSelector } from 'react-redux';
+import Recommendation from './pages/Recommendation';
 
 const App = () => {
   const user = useSelector((state) => state?.user.user);
@@ -35,6 +36,7 @@ const App = () => {
         <Route path='/uploadform' element={user ? <UploadForm/>: <SetUp/>}/>
         <Route path='/notes' element={user ? <ImageUploadForm/> : <SetUp/>}/>
         <Route path='/performance' element={user ? <Performance/>: <SetUp/>}/>
+        <Route path='/recommendation' element={user ? <Recommendation/>: <SetUp/>}/>
       </Routes>
     </Router> 
     </>

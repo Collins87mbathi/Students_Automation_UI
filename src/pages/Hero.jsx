@@ -61,6 +61,7 @@ const Hero = () => {
     </div>
    
     <div className="border shadow-lg rounded-lg hover:scale-105 duration-300">
+    <Link to='/recommendation'>
       <div className="h-25 m-4">
         <img
           src={img4}
@@ -72,6 +73,7 @@ const Hero = () => {
       <div className="flex gap-1 flex-col p-2">
         <h3 className="font-bold text-center">Recommendations</h3>
         </div>
+        </Link>
     </div>
    
     <div className="border shadow-lg rounded-lg hover:scale-105 duration-300">
