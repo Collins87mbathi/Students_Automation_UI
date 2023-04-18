@@ -23,8 +23,8 @@ const Recommendation = async () => {
      let recommendationText;
       const fetchRecommendations = async () => {
         const configuration = new Configuration({
-            organization: "org-p9VnXVzsADpxQUZB9XDL6cbs",
-            apiKey: "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",
+            organization: "org-IOcnAL5a9XZmY0vCEUQhj8wm",
+            apiKey: "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",
         });
         const openai = new OpenAIApi(configuration);
         const response = await openai.listEngines();
